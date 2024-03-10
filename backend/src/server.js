@@ -18,10 +18,10 @@ wss.on("connection", (ws) => {
   ws.on("message", (data) => {
     // envia uma mensagem para todos os clientes
     wss.clients.forEach((client) => {
-      client.send(data);
+      client.send(data.toString());
     });
   });
-  console.log("cliente connected");
+  console.log("client connected");
 });
 
 console.log("server running");
