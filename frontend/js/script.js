@@ -59,7 +59,6 @@ const scrollScreen = () => {
 };
 
 const processMessage = ({ data }) => {
-  console.log(data);
   const { userId, userName, userColor, content } = JSON.parse(data);
 
   const message =
@@ -103,6 +102,7 @@ const sendMessage = (event) => {
   websocket.send(JSON.stringify(message));
 
   chatInput.value = "";
+  chatInput.focus();
 };
 
 loginForm.addEventListener("submit", handleLogin);
