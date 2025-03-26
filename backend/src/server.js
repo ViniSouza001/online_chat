@@ -13,16 +13,34 @@ const wss = new WebSocketServer({
   port: PORT,
 });
 
+
+
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
   ws.on("message", (data) => {
     // envia uma mensagem para todos os clientes
-    console.log(data.toString())
     wss.clients.forEach((client) => {
       client.send(data.toString());
     });
+    console.log(message)
   });
+
+  ws.on("close", () => {
+    const message = {
+      userId: ws.userId,
+      userName: ws.userName,
+      userColor: ws.userColor,
+      content: "saiu",
+      systemMessage: true
+    }
+
+    wss.clients.forEach((client) => {
+      client.send(JSON.stringify(message));
+    });
+  })
+
+
 });
 
 console.log("server running on port " + PORT);

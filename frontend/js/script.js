@@ -89,13 +89,7 @@ const processMessage = ({ data }) => {
   scrollScreen();
 };
 
-const handleLogin = (event) => {
-  event.preventDefault();
-
-  user.id = crypto.randomUUID();
-  user.name = loginInput.value;
-  user.color = getRandomColor();
-
+const stablishWebSocketConnection = () => {
   websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
   websocket.onmessage = processMessage;
 
@@ -110,8 +104,41 @@ const handleLogin = (event) => {
       websocket.send(JSON.stringify(message));
     };
 
+    
+    websocket.onclose = () => {
+      const message = {
+        userId: user.id,
+        userName: user.name,
+        userColor: user.color,
+        content: "saiu",
+        systemMessage: true
+      }
+      websocket.send(JSON.stringify(message));
+      websocket.onmessage = processMessage;
+    }
+}
+
+const handleLogin = (event) => {
+  event.preventDefault();
+
+  user.id = crypto.randomUUID();
+  user.name = loginInput.value;
+  user.color = getRandomColor();
+  stablishWebSocketConnection()
+
   login.style.display = "none";
   chat.style.display = "flex";
+
+  websocket.onclose = () => {
+    const message = {
+      userId: user.id,
+        userName: user.name,
+        userColor: user.color,
+        content: "saiu",
+        systemMessage: true
+    }
+    websocket.send(JSON.stringify(message));
+  }
 };
 
 const sendMessage = (event) => {
