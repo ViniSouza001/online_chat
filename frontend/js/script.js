@@ -51,6 +51,20 @@ const createMessageOtherElement = (content, sender, senderColor) => {
   return div;
 };
 
+const createMessageSystem = (content, userName, userColor) => {
+  const div = document.createElement("div");
+  const span = document.createElement("span");
+
+  div.classList.add("message--system");
+  div.appendChild(span);
+  span.style.color = userColor;
+
+  span.innerHTML = userName;
+  div.innerHTML += "&nbsp;" + content; // give a empty space
+
+  return div
+}
+
 const scrollScreen = () => {
   window.scrollTo({
     top: document.body.scrollHeight,
@@ -59,12 +73,16 @@ const scrollScreen = () => {
 };
 
 const processMessage = ({ data }) => {
-  const { userId, userName, userColor, content } = JSON.parse(data);
+  const { userId, userName, userColor, content, systemMessage } = JSON.parse(data);
 
-  const message =
-    userId == user.id
-      ? createMessageSelfElement(content)
-      : createMessageOtherElement(content, userName, userColor);
+  // if userId is equal my id, message is mine, else is from another person
+  if(systemMessage) {
+    message = createMessageSystem(content, userName, userColor)
+  } else if (userId == user.id) {
+    message = createMessageSelfElement(content)
+  } else {
+    message = createMessageOtherElement(content, userName, userColor);
+  }
 
   chatMessages.appendChild(message);
 
@@ -78,15 +96,22 @@ const handleLogin = (event) => {
   user.name = loginInput.value;
   user.color = getRandomColor();
 
-  login.style.display = "none";
-  chat.style.display = "flex";
-
   websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
   websocket.onmessage = processMessage;
 
-  //   websocket.onopen = () => {
-  //     websocket.send(`Usuário ${user.name} entrou no chat`);
-  //   };
+    websocket.onopen = () => {
+      const message = {
+        userId: user.id,
+        userName: user.name,
+        userColor: user.color,
+        content: "entrou no chat",
+        systemMessage: true
+      };
+      websocket.send(JSON.stringify(message));
+    };
+
+  login.style.display = "none";
+  chat.style.display = "flex";
 };
 
 const sendMessage = (event) => {
@@ -97,6 +122,7 @@ const sendMessage = (event) => {
     userName: user.name,
     userColor: user.color,
     content: chatInput.value,
+    systemMessage: false
   };
 
   websocket.send(JSON.stringify(message));

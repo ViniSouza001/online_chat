@@ -153,3 +153,13 @@ body {
   font-weight: 700;
   color: cadetblue;
 }
+
+.message--system {
+  display: flex;
+  background-color: rgb(22, 22, 22);
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  user-select: none;
+}
