@@ -9,6 +9,10 @@ const chatForm = chat.querySelector(".chat__form");
 const chatInput = chat.querySelector(".chat__input");
 const chatMessages = chat.querySelector(".chat__messages");
 
+// sounds
+const audio1 = new Audio('../audio/sound_chat1.mp3');
+const audio2 = new Audio('../audio/sound_chat2.mp3');
+
 const colors = [
   "cadetblue",
   "darkgoldenrod",
@@ -73,10 +77,9 @@ const scrollScreen = () => {
 };
 
 const playAudio = () => {
-  const audios = [];
-  audios.push(new Audio('../audio/sound_chat1.mp3'));
-  audios.push(new Audio('../audio/sound_chat2.mp3'));
-  console.log(audios);
+  const audios = [audio1, audio2];
+  const randomNumber = Math.floor(Math.random() * 2)
+  audios[randomNumber].play();
 }
 
 const processMessage = ({ data }) => {
