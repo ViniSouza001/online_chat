@@ -106,7 +106,7 @@ const stablishWebSocketConnection = () => {
 
   // for testing
   // websocket = new WebSocket("ws://localhost:8080");
-  
+
   websocket.onmessage = processMessage;
 
     websocket.onopen = () => {
@@ -118,7 +118,9 @@ const stablishWebSocketConnection = () => {
       //   systemMessage: true
       // };
       // websocket.send(JSON.stringify(message));
-      websocket.send({"user": `Usuário: ${user.name} entrou no chat`});
+      const userTest = {
+        "User": `Usuário: ${user.name} entrou no chat`
+      }
     };
 
     
