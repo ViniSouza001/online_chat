@@ -72,6 +72,13 @@ const scrollScreen = () => {
   });
 };
 
+const playAudio = () => {
+  const audios = [];
+  audios.push(new Audio('../audio/sound_chat1.mp3'));
+  audios.push(new Audio('../audio/sound_chat2.mp3'));
+  console.log(audios);
+}
+
 const processMessage = ({ data }) => {
   const { userId, userName, userColor, content, systemMessage } = JSON.parse(data);
 
@@ -85,6 +92,8 @@ const processMessage = ({ data }) => {
   }
 
   chatMessages.appendChild(message);
+
+  playAudio();
 
   scrollScreen();
 };

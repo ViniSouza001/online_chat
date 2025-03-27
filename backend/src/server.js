@@ -23,21 +23,6 @@ wss.on("connection", (ws) => {
     wss.clients.forEach((client) => {
       client.send(data.toString());
     });
-    console.log(message)
-  });
-
-  ws.on("close", () => {
-    const message = {
-      userId: ws.userId,
-      userName: ws.userName,
-      userColor: ws.userColor,
-      content: "saiu",
-      systemMessage: true
-    }
-
-    wss.clients.forEach((client) => {
-      client.send(JSON.stringify(message));
-    });
   });
 
 
