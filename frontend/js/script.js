@@ -78,7 +78,7 @@ const scrollScreen = () => {
 
 const playAudio = () => {
   const audios = [audio1, audio2];
-  const randomNumber = Math.floor(Math.random() * 2)
+  const randomNumber = Math.floor(Math.random() * 2);
   audios[randomNumber].play();
 }
 
@@ -110,31 +110,16 @@ const stablishWebSocketConnection = () => {
   websocket.onmessage = processMessage;
 
     websocket.onopen = () => {
-      // const message = {
-      //   userId: user.id,
-      //   userName: user.name,
-      //   userColor: user.color,
-      //   content: "entrou no chat",
-      //   systemMessage: true
-      // };
-      // websocket.send(JSON.stringify(message));
-      const userTest = {
-        "User": `Usuário: ${user.name} entrou no chat`
-      }
-    };
-
-    
-    websocket.onclose = () => {
       const message = {
         userId: user.id,
         userName: user.name,
         userColor: user.color,
-        content: "saiu",
+        content: "entrou no chat",
         systemMessage: true
-      }
+      };
       websocket.send(JSON.stringify(message));
-      websocket.onmessage = processMessage;
-    }
+
+    };
 }
 
 const handleLogin = (event) => {
@@ -148,16 +133,16 @@ const handleLogin = (event) => {
   login.style.display = "none";
   chat.style.display = "flex";
 
-  // websocket.onclose = () => {
-  //   const message = {
-  //     userId: user.id,
-  //       userName: user.name,
-  //       userColor: user.color,
-  //       content: "saiu",
-  //       systemMessage: true
-  //   }
-  //   websocket.send(JSON.stringify(message));
-  // }
+  websocket.onclose = () => {
+    const message = {
+      userId: user.id,
+        userName: user.name,
+        userColor: user.color,
+        content: "saiu",
+        systemMessage: true
+    }
+    websocket.send(JSON.stringify(message));
+  }
 };
 
 const sendMessage = (event) => {
