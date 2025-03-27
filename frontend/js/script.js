@@ -103,17 +103,22 @@ const processMessage = ({ data }) => {
 
 const stablishWebSocketConnection = () => {
   websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
+
+  // for testing
+  // websocket = new WebSocket("ws://localhost:8080");
+  
   websocket.onmessage = processMessage;
 
     websocket.onopen = () => {
-      const message = {
-        userId: user.id,
-        userName: user.name,
-        userColor: user.color,
-        content: "entrou no chat",
-        systemMessage: true
-      };
-      websocket.send(JSON.stringify(message));
+      // const message = {
+      //   userId: user.id,
+      //   userName: user.name,
+      //   userColor: user.color,
+      //   content: "entrou no chat",
+      //   systemMessage: true
+      // };
+      // websocket.send(JSON.stringify(message));
+      websocket.send({"user": `Usuário: ${user.name} entrou no chat`});
     };
 
     
@@ -141,16 +146,16 @@ const handleLogin = (event) => {
   login.style.display = "none";
   chat.style.display = "flex";
 
-  websocket.onclose = () => {
-    const message = {
-      userId: user.id,
-        userName: user.name,
-        userColor: user.color,
-        content: "saiu",
-        systemMessage: true
-    }
-    websocket.send(JSON.stringify(message));
-  }
+  // websocket.onclose = () => {
+  //   const message = {
+  //     userId: user.id,
+  //       userName: user.name,
+  //       userColor: user.color,
+  //       content: "saiu",
+  //       systemMessage: true
+  //   }
+  //   websocket.send(JSON.stringify(message));
+  // }
 };
 
 const sendMessage = (event) => {

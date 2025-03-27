@@ -22,10 +22,10 @@ wss.on("connection", (ws) => {
     // envia uma mensagem para todos os clientes
     wss.clients.forEach((client) => {
       client.send(data.toString());
+      console.log(data.toString());
     });
   });
-
-
+  console.log("Client connected");
 });
 
 console.log("server running on port " + PORT);
