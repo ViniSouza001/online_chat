@@ -13,8 +13,6 @@ const wss = new WebSocketServer({
   port: PORT,
 });
 
-
-
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
@@ -24,7 +22,6 @@ wss.on("connection", (ws) => {
       client.send(data.toString());
     });
   });
-  
 });
 
 console.log("server running on port " + PORT);

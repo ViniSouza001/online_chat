@@ -1,3 +1,5 @@
+const header = document.querySelector("header");
+
 // login elements
 const login = document.querySelector(".login");
 const loginForm = login.querySelector(".login__form");
@@ -13,6 +15,50 @@ const chatMessages = chat.querySelector(".chat__messages");
 const audio1 = new Audio('../audio/sound_chat1.mp3');
 const audio2 = new Audio('../audio/sound_chat2.mp3');
 
+// connect to server
+let websocket;
+
+const processMessage = ({ data }) => {
+  console.log(data)
+  const { userId, userName, userColor, content, systemMessage } = JSON.parse(data);
+
+  // if userId is equal my id, message is mine, else is from another person
+  if(systemMessage) {
+    message = createMessageSystem(content, userName, userColor)
+  } else if (userId == user.id) {
+    message = createMessageSelfElement(content)
+  } else {
+    message = createMessageOtherElement(content, userName, userColor);
+  }
+
+  chatMessages.appendChild(message);
+
+  playAudio();
+
+  scrollScreen();
+};
+
+const connect = () => {
+  websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
+
+  // for testing
+  // websocket = new WebSocket("ws://localhost:8080");
+  
+  websocket.onmessage = processMessage;
+
+    websocket.onopen = () => {
+      header.style.display = "none";
+      const message = {
+        userId: user.id,
+        userName: user.name,
+        userColor: user.color,
+        content: "entrou no chat",
+        systemMessage: true
+      };
+      websocket.send(JSON.stringify(message));
+    };
+}
+
 const colors = [
   "cadetblue",
   "darkgoldenrod",
@@ -24,7 +70,6 @@ const colors = [
 
 const user = { id: "", name: "", color: "" };
 
-let websocket;
 
 const getRandomColor = () => {
   const randomIndex = Math.floor(Math.random() * colors.length);
@@ -82,67 +127,19 @@ const playAudio = () => {
   audios[randomNumber].play();
 }
 
-const processMessage = ({ data }) => {
-  const { userId, userName, userColor, content, systemMessage } = JSON.parse(data);
-
-  // if userId is equal my id, message is mine, else is from another person
-  if(systemMessage) {
-    message = createMessageSystem(content, userName, userColor)
-  } else if (userId == user.id) {
-    message = createMessageSelfElement(content)
-  } else {
-    message = createMessageOtherElement(content, userName, userColor);
-  }
-
-  chatMessages.appendChild(message);
-
-  playAudio();
-
-  scrollScreen();
-};
-
-const stablishWebSocketConnection = () => {
-  websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
-
-  // for testing
-  // websocket = new WebSocket("ws://localhost:8080");
-
-  websocket.onmessage = processMessage;
-
-    websocket.onopen = () => {
-      const message = {
-        userId: user.id,
-        userName: user.name,
-        userColor: user.color,
-        content: "entrou no chat",
-        systemMessage: true
-      };
-      websocket.send(JSON.stringify(message));
-
-    };
-}
-
 const handleLogin = (event) => {
   event.preventDefault();
 
   user.id = crypto.randomUUID();
   user.name = loginInput.value;
   user.color = getRandomColor();
-  stablishWebSocketConnection()
+
+  header.style.display = "flex";
+
+  connect();
 
   login.style.display = "none";
   chat.style.display = "flex";
-
-  websocket.onclose = () => {
-    const message = {
-      userId: user.id,
-        userName: user.name,
-        userColor: user.color,
-        content: "saiu",
-        systemMessage: true
-    }
-    websocket.send(JSON.stringify(message));
-  }
 };
 
 const sendMessage = (event) => {
