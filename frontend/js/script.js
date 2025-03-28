@@ -1,4 +1,7 @@
-const header = document.querySelector("header");
+const header = document.querySelector(".load");
+let userCount = 0;
+const userCountString = document.querySelector('.userCount');
+const headerCouting = document.querySelector('.counting');
 
 // login elements
 const login = document.querySelector(".login");
@@ -19,11 +22,16 @@ const audio2 = new Audio('../audio/sound_chat2.mp3');
 let websocket;
 
 const processMessage = ({ data }) => {
-  const { userId, userName, userColor, content, systemMessage } = JSON.parse(data);
+  const { userId, userName, userColor, content, systemMessage, enteredUser } = JSON.parse(data);
 
   // if userId is equal my id, message is mine, else is from another person
   if(systemMessage) {
-    message = createMessageSystem(content, userName, userColor)
+    message = createMessageSystem(content, userName, userColor);
+
+    // if a user entered add one more to count, else it is subtracted
+    enteredUser ? userCount++ : userCount--
+
+    userCountString.textContent = `Usuários conectados: ${userCount}`
   } else if (userId == user.id) {
     message = createMessageSelfElement(content)
   } else {
@@ -47,15 +55,31 @@ const connect = () => {
 
     websocket.onopen = () => {
       header.style.display = "none";
+      headerCouting.style.display = "flex"
+      // userCountString.style.display = "block";
       const message = {
         userId: user.id,
         userName: user.name,
         userColor: user.color,
         content: "entrou no chat",
-        systemMessage: true
+        systemMessage: true,
+        enteredUser: true
       };
       websocket.send(JSON.stringify(message));
     };
+
+    // send message when left of page
+    window.onbeforeunload = () => {
+      const exitMessage = {
+        userId: user.id,
+        userName: user.name,
+        userColor: user.color,
+        content: "saiu do chat",
+        systemMessage: true,
+        enteredUser: false
+      };
+      websocket.send(JSON.stringify(exitMessage));
+    }
 }
 
 const colors = [

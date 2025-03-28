@@ -14,10 +14,12 @@
 body {
   background: url("./images/background.png");
   color: #f2f2f2;
+  display: flex;
 }
 
-header {
-  width: 80%;
+.load {
+  position: fixed;
+  width: 100%;
   margin: auto;
   display: none;
   flex-direction: column;
@@ -26,13 +28,32 @@ header {
   margin-top: 10px;
 }
 
-header > h1 {
-  font: normal 14pt Arial;
+.load > h1 {
+  font: normal 14pt "Inter";
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
 }
 
-.loading {
+.loader {
   width: 40px;
   margin-top: 10px;
+}
+
+.counting {
+  width: 100%;
+  padding: 20px;
+  background-color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  position: fixed;
+}
+
+.userCount {
+  font: normal 15pt "Inter";
 }
 
 .container {
@@ -100,7 +121,7 @@ header > h1 {
 
 .chat__messages {
   flex-grow: 1;
-  padding: 30px 30px 90px;
+  padding: 80px 30px 90px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;

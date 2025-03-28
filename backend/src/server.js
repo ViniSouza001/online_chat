@@ -2,6 +2,7 @@ const { WebSocketServer } = require("ws");
 const cors = require("cors");
 const express = require("express");
 const app = express();
+const userCount = 0;
 
 app.use(cors());
 
@@ -17,11 +18,34 @@ wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
   ws.on("message", (data) => {
+    console.log(data.toString());
     // envia uma mensagem para todos os clientes
     wss.clients.forEach((client) => {
-      client.send(data.toString());
+      if(client.readyState === 1) { 
+        client.send(data.toString());
+      }
     });
+
+    ws.userData - JSON.parse(data.toString())
   });
+
+  ws.on("close", () => {
+    if(ws.userData) {
+      const exitMessage = {
+        userId: ws.userData.userId,
+        userName: ws.userData.userName,
+        userColor: ws.userData.userColor,
+        content: "saiu do chat",
+        systemMessage: true,
+      }
+
+      wss.clients.forEach((client) => {
+        if(client.readyState === 1) {
+          client.send(JSON.stringify(exitMessage));
+        }
+      })
+    }
+  })
 });
 
 console.log("server running on port " + PORT);
