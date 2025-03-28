@@ -19,7 +19,6 @@ const audio2 = new Audio('../audio/sound_chat2.mp3');
 let websocket;
 
 const processMessage = ({ data }) => {
-  console.log(data)
   const { userId, userName, userColor, content, systemMessage } = JSON.parse(data);
 
   // if userId is equal my id, message is mine, else is from another person
@@ -135,7 +134,6 @@ const handleLogin = (event) => {
   user.color = getRandomColor();
 
   header.style.display = "flex";
-
   connect();
 
   login.style.display = "none";
