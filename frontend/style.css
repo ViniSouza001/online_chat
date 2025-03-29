@@ -41,6 +41,16 @@ body {
   margin-top: 10px;
 }
 
+.typing-indicator {
+  align-self: flex-start;
+  padding: 10px;
+  background-color: #123;
+  color: #f2f2f2;
+  border-radius: 0px 10px 10px 10px;
+  flex-wrap: wrap;
+  transition: 0.3s;
+}
+
 .counting {
   width: 100%;
   padding: 20px;

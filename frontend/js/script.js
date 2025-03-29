@@ -21,29 +21,18 @@ const audio2 = new Audio('../audio/sound_chat2.mp3');
 // connect to server
 let websocket;
 
-const processMessage = ({ data }) => {
-  const { userId, userName, userColor, content, systemMessage, enteredUser } = JSON.parse(data);
+// other elements
+let typingTimeout;
+const colors = [
+  "cadetblue",
+  "darkgoldenrod",
+  "cornflowerblue",
+  "darkkhaki",
+  "hotpink",
+  "gold",
+];
 
-  // if userId is equal my id, message is mine, else is from another person
-  if(systemMessage) {
-    message = createMessageSystem(content, userName, userColor);
-
-    // if a user entered add one more to count, else it is subtracted
-    enteredUser ? userCount++ : userCount--
-
-    userCountString.textContent = `Usuários conectados: ${userCount}`
-  } else if (userId == user.id) {
-    message = createMessageSelfElement(content)
-  } else {
-    message = createMessageOtherElement(content, userName, userColor);
-  }
-
-  chatMessages.appendChild(message);
-
-  playAudio();
-
-  scrollScreen();
-};
+const user = { id: "", name: "", color: "" };
 
 const connect = () => {
   websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
@@ -82,17 +71,80 @@ const connect = () => {
     }
 }
 
-const colors = [
-  "cadetblue",
-  "darkgoldenrod",
-  "cornflowerblue",
-  "darkkhaki",
-  "hotpink",
-  "gold",
-];
+const displayMessage = (data) => {
+  const { userId, userName, userColor, content, systemMessage, enteredUser } = data;
 
-const user = { id: "", name: "", color: "" };
+  if(!content.trim()) {
+    console.log(content)
+    alert("A mensagem não pode estar vazia");
+    return;
+  }
+  // if userId is equal my id, message is mine, else is from another person
+  if(systemMessage) {
+    message = createMessageSystem(content, userName, userColor);
 
+    // if a user entered add one more to count, else it is subtracted
+    enteredUser ? userCount++ : userCount--
+
+    userCountString.textContent = `Usuários conectados: ${userCount}`
+  } else if (userId == user.id) {
+    message = createMessageSelfElement(content)
+  } else {
+    message = createMessageOtherElement(content, userName, userColor);
+  }
+
+  chatMessages.appendChild(message);
+
+  playAudio();
+
+  scrollScreen();
+};
+
+
+// system to know when someone is typing
+const handleTyping = () => {
+  websocket.send(
+    JSON.stringify({
+      userId: user.id,
+      userName: user.name,
+      typing: true // show that user is typing
+    })
+  );
+
+  // remove the indication of typing after 3 seconds of inativity
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    websocket.send(
+      JSON.stringify({
+        userId: user.id,
+        userName: user.name,
+        typing: false // show the user stoped of typing
+      })
+    );
+  }, 1000);
+}
+
+chatInput.addEventListener("input", handleTyping);
+
+const typingIndicator = document.createElement("div");
+typingIndicator.classList.add("typing-indicator");
+
+const processMessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  if(data.typing !== undefined) {
+    if(data.typing) {
+      typingIndicator.innerText = `${data.userName} está digitando...`
+      chatMessages.appendChild(typingIndicator);
+    } else {
+      typingIndicator.innerText = ``
+      typingIndicator.remove();
+
+    }
+  } else {
+    displayMessage(data);
+  }
+}
 
 const getRandomColor = () => {
   const randomIndex = Math.floor(Math.random() * colors.length);
@@ -166,6 +218,15 @@ const handleLogin = (event) => {
 
 const sendMessage = (event) => {
   event.preventDefault();
+
+  // remove the alert that the user is typing
+  websocket.send(
+    JSON.stringify({
+      userId: user.id,
+      userName: user.name,
+      typing: false // show that user is typing
+    })
+  );
 
   const message = {
     userId: user.id,

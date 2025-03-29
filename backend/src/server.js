@@ -18,15 +18,28 @@ wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
   ws.on("message", (data) => {
-    console.log(data.toString());
-    // envia uma mensagem para todos os clientes
-    wss.clients.forEach((client) => {
-      if(client.readyState === 1) { 
-        client.send(data.toString());
-      }
-    });
-
-    ws.userData - JSON.parse(data.toString())
+    const parsedData = JSON.parse(data.toString());
+    if(parsedData.typing !== undefined) {
+      wss.clients.forEach((client) => {
+        if(client.readyState === 1 && client !== ws) {
+          client.send(
+            JSON.stringify({
+              userId: parsedData.userId,
+              userName: parsedData.userName,
+              typing: parsedData.typing
+            })
+          );
+        }
+      });
+    } else {
+      // envia uma mensagem para todos os clientes
+      wss.clients.forEach((client) => {
+        if(client.readyState === 1) { 
+          client.send(data.toString());
+        }
+      });
+      ws.userData - JSON.parse(data.toString())
+    };
   });
 
   ws.on("close", () => {
