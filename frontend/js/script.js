@@ -1,7 +1,9 @@
 const header = document.querySelector(".load");
 let userCount = 0;
 const userCountString = document.querySelector('.userCount');
-const headerCouting = document.querySelector('.counting');
+const headerCouting = document.querySelector('.header');
+const threePoints = document.querySelector(".activeConfig")
+const config = document.querySelector(".config");
 
 // login elements
 const login = document.querySelector(".login");
@@ -33,6 +35,10 @@ const colors = [
 ];
 
 const user = { id: "", name: "", color: "" };
+
+const inTesting = () => {
+  alert("Function still in test");
+}
 
 const connect = () => {
   websocket = new WebSocket("wss://chat-backend-nb82.onrender.com");
@@ -244,3 +250,11 @@ const sendMessage = (event) => {
 
 loginForm.addEventListener("submit", handleLogin);
 chatForm.addEventListener("submit", sendMessage);
+
+
+// frontend
+
+// config
+const activeConfig = () => {
+  config.classList.toggle("configActive");
+}
