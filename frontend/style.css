@@ -208,7 +208,8 @@ body {
   font-size: 1.8rem;
 }
 
-.chat__messages > div {
+.chat__messages > div.message--self,
+.chat__messages > div.message--other {
   padding: 10px;
   width: 100%;
   max-width: 250px;
@@ -249,4 +250,41 @@ body {
   justify-content: center;
   align-self: center;
   user-select: none;
+  padding: 10px;
+  min-width: 250px;
+  margin-bottom: 15px;
+  line-height: 22px;
+  font-size: 0.9rem;
+}
+
+.alterName {
+  position: absolute;
+  width: 300px;
+  padding: 10px 10px;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #212121;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+}
+
+.alterName h1 {
+  font: normal 15pt "Inter";
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.btnAlter, .btnCancel {
+  padding: 10px 15px;
+  width: 100px;
+}
+
+.display--none {
+  display: none;
 }

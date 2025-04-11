@@ -26,7 +26,7 @@
       </span>
     </header>
     <header class="config header">
-      <p onclick="inTesting()" class="cursorPointer">Alterar nome</p>
+      <p onclick="handleFormName()" class="cursorPointer">Alterar nome</p>
       <p onclick="inTesting()" class="cursorPointer">Tamanho da fonte</p>
       <p class="closeConfig cursorPointer" onclick="activeConfig()">X</p>
     </header>
@@ -39,6 +39,7 @@
             class="login__input"
             placeholder="Seu nome"
             required
+            minlength="4"
           />
           <button type="submit" class="login__button">Entrar</button>
         </form>
@@ -56,6 +57,12 @@
           <button type="submit" class="chat__button">
             <span class="material-symbols-outlined">send</span>
           </button>
+        </form>
+        <form class="alterName display--none">
+          <h1>Alterar nome</h1>
+          <input type="text" minlength="4" required class="login__input inputAlterName" placeholder="Digite seu nome de usuário">
+          <button class="login__button btnAlter" type="submit">Alterar</button>
+          <button class="login__button btnCancel" onclick="handleFormName()">Cancelar</button>
         </form>
       </section>
     </section>

@@ -1,64 +1,81 @@
+// server.js
 const { WebSocketServer } = require("ws");
 const cors = require("cors");
 const express = require("express");
-const app = express();
-const userCount = 0;
 
+const app = express();
 app.use(cors());
 
-const dotenv = require("dotenv");
-dotenv.config();
+require("dotenv").config();
 
-const PORT = process.env.PORT || 8080
-const wss = new WebSocketServer({
-  port: PORT,
-});
+const PORT = process.env.PORT || 8080;
+const wss = new WebSocketServer({ port: PORT });
+
+let userCount = 0;
 
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
 
-  ws.on("message", (data) => {
-    const parsedData = JSON.parse(data.toString());
-    if(parsedData.typing !== undefined) {
+  ws.on("message", (raw) => {
+    const data = JSON.parse(raw.toString());
+
+    // Controla entrada e saída de usuários
+    if (data.systemMessage && data.enteredUser) {
+      if (data.enteredUser === "joined") {
+        userCount++;
+        ws.userData = data; // associa usuário ao socket
+      } else if (data.enteredUser === "left") {
+        userCount = Math.max(0, userCount - 1);
+      }
+
+      // Atualiza contador na própria mensagem
+      data.userCount = userCount;
+    }
+
+    // Controla status de digitação
+    if (data.typing !== undefined) {
       wss.clients.forEach((client) => {
-        if(client.readyState === 1 && client !== ws) {
-          client.send(
-            JSON.stringify({
-              userId: parsedData.userId,
-              userName: parsedData.userName,
-              typing: parsedData.typing
-            })
-          );
+        if (client.readyState === 1 && client !== ws) {
+          client.send(JSON.stringify({
+            userId: data.userId,
+            userName: data.userName,
+            typing: data.typing
+          }));
         }
       });
-    } else {
-      // envia uma mensagem para todos os clientes
-      wss.clients.forEach((client) => {
-        if(client.readyState === 1) { 
-          client.send(data.toString());
-        }
-      });
-      ws.userData - JSON.parse(data.toString())
-    };
+      return;
+    }
+
+    // Envia mensagem para todos os usuários conectados
+    const jsonMessage = JSON.stringify(data);
+    wss.clients.forEach((client) => {
+      if (client.readyState === 1) {
+        client.send(jsonMessage);
+      }
+    });
   });
 
   ws.on("close", () => {
-    if(ws.userData) {
-      const exitMessage = {
+    if (ws.userData) {
+      userCount = Math.max(0, userCount - 1);
+      const leaveMessage = {
         userId: ws.userData.userId,
         userName: ws.userData.userName,
         userColor: ws.userData.userColor,
         content: "saiu do chat",
         systemMessage: true,
-      }
+        enteredUser: "left",
+        userCount
+      };
 
+      const msg = JSON.stringify(leaveMessage);
       wss.clients.forEach((client) => {
-        if(client.readyState === 1) {
-          client.send(JSON.stringify(exitMessage));
+        if (client.readyState === 1) {
+          client.send(msg);
         }
-      })
+      });
     }
-  })
+  });
 });
 
 console.log("server running on port " + PORT);

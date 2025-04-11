@@ -16,6 +16,11 @@ const chatForm = chat.querySelector(".chat__form");
 const chatInput = chat.querySelector(".chat__input");
 const chatMessages = chat.querySelector(".chat__messages");
 
+// config elements
+const alterName = document.querySelector(".alterName");
+const cancel = document.querySelector(".btnCancel");
+const inputAlterName = document.querySelector(".inputAlterName")
+
 // sounds
 const audio1 = new Audio('../audio/sound_chat1.mp3');
 const audio2 = new Audio('../audio/sound_chat2.mp3');
@@ -58,41 +63,30 @@ const connect = () => {
         userColor: user.color,
         content: "entrou no chat",
         systemMessage: true,
-        enteredUser: true
+        enteredUser: "joined"
       };
       websocket.send(JSON.stringify(message));
     };
-
-    // send message when left of page
-    window.onbeforeunload = () => {
-      const exitMessage = {
-        userId: user.id,
-        userName: user.name,
-        userColor: user.color,
-        content: "saiu do chat",
-        systemMessage: true,
-        enteredUser: false
-      };
-      websocket.send(JSON.stringify(exitMessage));
-    }
 }
 
 const displayMessage = (data) => {
-  const { userId, userName, userColor, content, systemMessage, enteredUser } = data;
+  // console.log(data)
+  const { userId, userName, userColor, content, isNewName, systemMessage, userCount } = data;
 
   if(!content.trim()) {
-    console.log(content)
     alert("A mensagem não pode estar vazia");
     return;
   }
   // if userId is equal my id, message is mine, else is from another person
   if(systemMessage) {
-    message = createMessageSystem(content, userName, userColor);
+    message = createMessageSystem(content, userName, userColor, isNewName);
+    console.log(userCount)
 
-    // if a user entered add one more to count, else it is subtracted
-    enteredUser ? userCount++ : userCount--
+    // atualiza contador se for recebido
+    if(userCount !== undefined) {
+      userCountString.textContent = `Usuários conectados: ${userCount}`
+    }
 
-    userCountString.textContent = `Usuários conectados: ${userCount}`
   } else if (userId == user.id) {
     message = createMessageSelfElement(content)
   } else {
@@ -116,6 +110,8 @@ const handleTyping = () => {
       typing: true // show that user is typing
     })
   );
+
+  // scrollScreen()
 
   // remove the indication of typing after 3 seconds of inativity
   clearTimeout(typingTimeout);
@@ -148,6 +144,7 @@ const processMessage = (event) => {
 
     }
   } else {
+    console.log(data)
     displayMessage(data);
   }
 }
@@ -167,32 +164,41 @@ const createMessageSelfElement = (content) => {
 
 const createMessageOtherElement = (content, sender, senderColor) => {
   const div = document.createElement("div");
-  const span = document.createElement("span");
+  const h1 = document.createElement("h1");
 
   div.classList.add("message--other");
-  span.classList.add("message--sender");
-  span.style.color = senderColor;
+  h1.classList.add("message--sender");
+  h1.style.color = senderColor;
 
-  div.appendChild(span);
+  div.appendChild(h1);
 
-  span.innerHTML = sender;
+  h1.innerHTML = sender;
   div.innerHTML += content;
 
   return div;
 };
 
-const createMessageSystem = (content, userName, userColor) => {
+const createMessageSystem = (content, userName, userColor, newName) => {
+
   const div = document.createElement("div");
   const span = document.createElement("span");
-
   div.classList.add("message--system");
   div.appendChild(span);
   span.style.color = userColor;
-
   span.innerHTML = userName;
-  div.innerHTML += "&nbsp;" + content; // give a empty space
 
-  return div
+  if (newName) {
+    const alteredName = document.createElement("span");
+    alteredName.style.color = userColor;
+    alteredName.innerHTML = "&nbsp;" + newName[1];
+    
+    div.innerHTML += "&nbsp;" + content
+    div.appendChild(alteredName)
+  } else {
+    div.innerHTML += "&nbsp;" + content; // give a empty space
+  }
+
+  return div;
 }
 
 const scrollScreen = () => {
@@ -248,13 +254,36 @@ const sendMessage = (event) => {
   chatInput.focus();
 };
 
+const handleAlterName = (e) => {
+  e.preventDefault();
+  const newName = inputAlterName.value
+  const data = {
+    userId: user.id,
+    userName: user.name,
+    userColor: user.color,
+    content: `mudou o nome para`,
+    isNewName: [true, newName],
+    systemMessage: true,
+    alterName: true
+  };
+  websocket.send(JSON.stringify(data));
+  user.name = newName;
+
+  handleFormName();
+  activeConfig()
+}
+
 loginForm.addEventListener("submit", handleLogin);
 chatForm.addEventListener("submit", sendMessage);
-
+alterName.addEventListener("submit", handleAlterName);
 
 // frontend
 
 // config
 const activeConfig = () => {
   config.classList.toggle("configActive");
+}
+
+const handleFormName = () => {
+  alterName.classList.toggle("display--none")
 }
