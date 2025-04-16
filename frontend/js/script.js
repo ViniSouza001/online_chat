@@ -70,7 +70,6 @@ const connect = () => {
 }
 
 const displayMessage = (data) => {
-  // console.log(data)
   const { userId, userName, userColor, content, isNewName, systemMessage, userCount } = data;
 
   if(!content.trim()) {
@@ -80,7 +79,6 @@ const displayMessage = (data) => {
   // if userId is equal my id, message is mine, else is from another person
   if(systemMessage) {
     message = createMessageSystem(content, userName, userColor, isNewName);
-    console.log(userCount)
 
     // atualiza contador se for recebido
     if(userCount !== undefined) {
@@ -144,7 +142,6 @@ const processMessage = (event) => {
 
     }
   } else {
-    console.log(data)
     displayMessage(data);
   }
 }
