@@ -13,6 +13,7 @@
 
 body {
   background: url("./images/background.png");
+  background-attachment: fixed;
   color: #f2f2f2;
   display: flex;
 }
@@ -247,11 +248,14 @@ body {
   background-color: rgb(22, 22, 22);
   border-radius: 10px;
   align-items: center;
+  text-align: center;
   justify-content: center;
   align-self: center;
   user-select: none;
   padding: 10px;
   min-width: 250px;
+  max-width: 250px;
+  flex-wrap: wrap;
   margin-bottom: 15px;
   line-height: 22px;
   font-size: 0.9rem;
@@ -287,4 +291,10 @@ body {
 
 .display--none {
   display: none;
+}
+
+.reload_page {
+  text-decoration: none;
+  color: #29d832;
+  cursor: pointer;
 }

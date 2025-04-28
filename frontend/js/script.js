@@ -284,3 +284,7 @@ const activeConfig = () => {
 const handleFormName = () => {
   alterName.classList.toggle("display--none")
 }
+
+const reload = () => {
+  window.location.reload()
+}
