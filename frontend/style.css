@@ -293,8 +293,15 @@ body {
   display: none;
 }
 
-.reload_page {
-  text-decoration: none;
-  color: #29d832;
-  cursor: pointer;
+#reconnect-alert {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #FF4444;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 10px;
+  z-index: 10;
+  font-family: "Inter";
 }

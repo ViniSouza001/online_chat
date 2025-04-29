@@ -67,6 +67,29 @@ const connect = () => {
       };
       websocket.send(JSON.stringify(message));
     };
+
+    websocket.onclose = () => {
+      let countdown = 5;
+
+      const alertBox = document.createElement("div");
+      alertBox.id = "reconnect-alert";
+
+      const countdownText = document.createElement("span");
+      countdownText.innerText = `Conexão perdida. Tentando reconectar em ${countdown}s...`
+      alertBox.appendChild(countdownText);
+
+      document.body.appendChild(alertBox);
+
+      const interval = setInterval(() => {
+        countdown--;
+        if(countdown <= 0) {
+          clearInterval(interval);
+          alertBox.remove();
+        } else {
+          countdownText.innerText = `Conexão perdida. Tentando reconectar em ${countdown}s...`
+        }
+      }, 1000);
+    }
 }
 
 const displayMessage = (data) => {
