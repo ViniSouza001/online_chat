@@ -26,7 +26,7 @@
       </span>
     </header>
     <header class="config header">
-      <p onclick="handleFormName()" class="cursorPointer">Alterar nome</p>
+      <p onclick="handleDisplay(alterName)" class="cursorPointer">Alterar nome</p>
       <p onclick="inTesting()" class="cursorPointer">Tamanho da fonte</p>
       <p class="closeConfig cursorPointer" onclick="activeConfig()">X</p>
     </header>
@@ -60,9 +60,9 @@
         </form>
         <form class="alterName display--none">
           <h1>Alterar nome</h1>
-          <input type="text" minlength="4" required class="login__input inputAlterName" placeholder="Digite seu nome de usuário">
+          <input type="text" minlength="4" class="login__input inputAlterName" name="userName" placeholder="Digite seu nome de usuário">
           <button class="login__button btnAlter" type="submit">Alterar</button>
-          <button class="login__button btnCancel" onclick="handleFormName()">Cancelar</button>
+          <button class="login__button btnCancel" type="button" onclick="handleDisplay(alterName)">Cancelar</button>
         </form>
       </section>
     </section>

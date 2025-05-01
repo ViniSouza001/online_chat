@@ -226,6 +226,16 @@ body {
   color: #121212;
   border-radius: 10px 10px 0px 10px;
   align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.edition {
+  width: 25px;
+  align-self: flex-end;
+  display: block;
+  cursor: pointer;
 }
 
 .message--other {

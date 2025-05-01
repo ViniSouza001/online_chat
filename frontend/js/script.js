@@ -176,8 +176,24 @@ const getRandomColor = () => {
 
 const createMessageSelfElement = (content) => {
   const div = document.createElement("div");
+  const editIcon = document.createElement("img");
+  const messageText = document.createElement("span")
+
   div.classList.add("message--self");
-  div.innerHTML = content;
+
+  // edition icon
+  editIcon.src = "./images/edit.png";
+  editIcon.alt = "Editar";
+  editIcon.classList.add("edition");
+  editIcon.classList.add("display--none");
+  
+  messageText.innerText = content;
+  div.appendChild(editIcon);
+  div.appendChild(messageText);
+
+  div.addEventListener("click", () => {
+    editIcon.classList.toggle("display--none");
+  });
 
   return div;
 };
@@ -277,6 +293,10 @@ const sendMessage = (event) => {
 const handleAlterName = (e) => {
   e.preventDefault();
   const newName = inputAlterName.value
+  if(!inputAlterName.value.trim()) {
+    alert("Você deve digitar um nome!")
+    return;
+  }
   const data = {
     userId: user.id,
     userName: user.name,
@@ -289,8 +309,9 @@ const handleAlterName = (e) => {
   websocket.send(JSON.stringify(data));
   user.name = newName;
 
-  handleFormName();
-  activeConfig()
+  handleDisplay(alterName);
+  activeConfig();
+  return;
 }
 
 loginForm.addEventListener("submit", handleLogin);
@@ -304,10 +325,10 @@ const activeConfig = () => {
   config.classList.toggle("configActive");
 }
 
-const handleFormName = () => {
-  alterName.classList.toggle("display--none")
+const handleDisplay = (element) => {
+  element.classList.toggle("display--none");
 }
 
 const reload = () => {
-  window.location.reload()
+  window.location.reload();
 }
