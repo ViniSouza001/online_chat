@@ -1,8 +1,8 @@
 const header = document.querySelector(".load");
 let userCount = 0;
+let editableMessageId = ""
 const userCountString = document.querySelector('.userCount');
 const headerCouting = document.querySelector('.header');
-const threePoints = document.querySelector(".activeConfig")
 const config = document.querySelector(".config");
 
 // login elements
@@ -18,8 +18,13 @@ const chatMessages = chat.querySelector(".chat__messages");
 
 // config elements
 const alterName = document.querySelector(".alterName");
+// const formAlterName = document.querySelector(".formAlterName");
+const forms = document.querySelectorAll(".form");
+const formEdition = document.querySelector(".formEdition");
+const inputFormEdition = formEdition.querySelector(".login__input");
 const cancel = document.querySelector(".btnCancel");
-const inputAlterName = document.querySelector(".inputAlterName")
+const inputAlterName = document.querySelector(".inputAlterName");
+const idMessage = "";
 
 // sounds
 const audio1 = new Audio('../audio/sound_chat1.mp3');
@@ -93,7 +98,14 @@ const connect = () => {
 }
 
 const displayMessage = (data) => {
-  const { userId, userName, userColor, content, isNewName, systemMessage, userCount } = data;
+  const { userId, userName, userColor, content, isNewName, systemMessage, userCount, contentEdition, idMessage, editedMessage } = data;
+
+ if(editedMessage) {
+    const message = document.getElementById(idMessage);
+    const contentSpan = message.querySelector(".message-content");
+    if(contentSpan) contentSpan.textContent = contentEdition;
+    return;
+  }
 
   if(!content.trim()) {
     alert("A mensagem não pode estar vazia");
@@ -109,18 +121,18 @@ const displayMessage = (data) => {
     }
 
   } else if (userId == user.id) {
-    message = createMessageSelfElement(content)
+    message = createMessageSelfElement(content, idMessage);
   } else {
-    message = createMessageOtherElement(content, userName, userColor);
+    message = createMessageOtherElement(content, userName, userColor, idMessage);
   }
+
+ 
 
   chatMessages.appendChild(message);
 
   playAudio();
-
   scrollScreen();
 };
-
 
 // system to know when someone is typing
 const handleTyping = () => {
@@ -174,34 +186,58 @@ const getRandomColor = () => {
   return colors[randomIndex];
 };
 
-const createMessageSelfElement = (content) => {
+
+const handleDisplay = (element) => {
+  element.classList.toggle("display--none");
+}
+
+const createMessageSelfElement = (content, idMessage) => {
+
   const div = document.createElement("div");
   const editIcon = document.createElement("img");
-  const messageText = document.createElement("span")
+  const messageText = document.createElement("span");
+  messageText.classList.add("message-content");
+  messageText.textContent = content;
 
   div.classList.add("message--self");
+  div.id = `${idMessage}`;
 
   // edition icon
   editIcon.src = "./images/edit.png";
   editIcon.alt = "Editar";
   editIcon.classList.add("edition");
   editIcon.classList.add("display--none");
+
+  div.addEventListener("mouseover", () => {
+    editIcon.classList.remove("display--none");
+  });
+
+  div.addEventListener("mouseleave", () => {
+    editIcon.classList.add("display--none");
+  });
+
+  editIcon.addEventListener("click", () => {
+    handleDisplay(formEdition);
+    formEdition.querySelector("input").value = content;
+
+    const currentContent = div.querySelector(".message-content").textContent;
+    inputFormEdition.value = currentContent;
+
+    editableMessageId = idMessage;
+  });
   
   messageText.innerText = content;
   div.appendChild(editIcon);
   div.appendChild(messageText);
 
-  div.addEventListener("click", () => {
-    editIcon.classList.toggle("display--none");
-  });
-
   return div;
 };
 
-const createMessageOtherElement = (content, sender, senderColor) => {
+const createMessageOtherElement = (content, sender, senderColor, idMessage) => {
   const div = document.createElement("div");
   const h1 = document.createElement("h1");
 
+  div.id = `${idMessage}`;
   div.classList.add("message--other");
   h1.classList.add("message--sender");
   h1.style.color = senderColor;
@@ -262,6 +298,8 @@ const handleLogin = (event) => {
 
   login.style.display = "none";
   chat.style.display = "flex";
+
+  chatInput.focus()
 };
 
 const sendMessage = (event) => {
@@ -281,7 +319,8 @@ const sendMessage = (event) => {
     userName: user.name,
     userColor: user.color,
     content: chatInput.value,
-    systemMessage: false
+    systemMessage: false,
+    idMessage: crypto.randomUUID()
   };
 
   websocket.send(JSON.stringify(message));
@@ -290,11 +329,13 @@ const sendMessage = (event) => {
   chatInput.focus();
 };
 
+// other forms
+
 const handleAlterName = (e) => {
   e.preventDefault();
-  const newName = inputAlterName.value
+  const newName = inputAlterName.value;
   if(!inputAlterName.value.trim()) {
-    alert("Você deve digitar um nome!")
+    alert("Você deve digitar um nome!");
     return;
   }
   const data = {
@@ -309,24 +350,40 @@ const handleAlterName = (e) => {
   websocket.send(JSON.stringify(data));
   user.name = newName;
 
+  inputAlterName.value = "";
   handleDisplay(alterName);
   activeConfig();
   return;
 }
 
-loginForm.addEventListener("submit", handleLogin);
-chatForm.addEventListener("submit", sendMessage);
-alterName.addEventListener("submit", handleAlterName);
+const editMessage = (event) => {
+  event.preventDefault();
+  const newMessage = formEdition.querySelector("input").value;
 
-// frontend
+  const data = {
+    "contentEdition": newMessage,
+    "idMessage": editableMessageId,
+    "editedMessage": true
+  }
+  websocket.send(JSON.stringify(data));
 
-// config
-const activeConfig = () => {
-  config.classList.toggle("configActive");
+  handleDisplay(formEdition);
+  return;
 }
 
-const handleDisplay = (element) => {
-  element.classList.toggle("display--none");
+loginForm.addEventListener("submit", handleLogin);
+chatForm.addEventListener("submit", sendMessage);
+formEdition.addEventListener("submit", editMessage);
+alterName.addEventListener("submit", handleAlterName);
+
+forms.forEach((f) => {
+  handleDisplay(f);
+});
+
+// functions
+
+const activeConfig = () => {
+  config.classList.toggle("configActive");
 }
 
 const reload = () => {

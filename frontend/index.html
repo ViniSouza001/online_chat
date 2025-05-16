@@ -16,7 +16,7 @@
         <p>Por favor aguarde</p>
         <p>Estamos conectando com o servidor...</p>
       </h1>
-      <img src="./images/loading.gif" alt="loading" class="loader cursorPointer">
+      <img src="./images/loading.gif" alt="loading" class="loader">
     </header>
     <header class="counting header">
       <span class="userCount">Usuários conectados: (error)</span>
@@ -58,12 +58,19 @@
             <span class="material-symbols-outlined">send</span>
           </button>
         </form>
-        <form class="alterName display--none">
+        <form class="form alterName formAlterName">
           <h1>Alterar nome</h1>
           <input type="text" minlength="4" class="login__input inputAlterName" name="userName" placeholder="Digite seu nome de usuário">
           <button class="login__button btnAlter" type="submit">Alterar</button>
           <button class="login__button btnCancel" type="button" onclick="handleDisplay(alterName)">Cancelar</button>
         </form>
+          <form class="form formEdition">
+          <h1>Editar mensagem</h1>
+            <input type="text" class="login__input" name="EditMessage" placeholder="Redigite sua mensagem">
+            <button type="submit" class="login__button">Editar mensagem</button>
+            <button type="button" class="login__button" onclick="handleDisplay(formEdition)">Cancelar</button>
+          </form>
+        </section>
       </section>
     </section>
   </body>

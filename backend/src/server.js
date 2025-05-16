@@ -39,7 +39,8 @@ wss.on("connection", (ws) => {
           client.send(JSON.stringify({
             userId: data.userId,
             userName: data.userName,
-            typing: data.typing
+            typing: data.typing,
+            idMessage: data.idMessage
           }));
         }
       });
@@ -48,6 +49,7 @@ wss.on("connection", (ws) => {
 
     // Envia mensagem para todos os usuários conectados
     const jsonMessage = JSON.stringify(data);
+    console.log(jsonMessage);
     wss.clients.forEach((client) => {
       if (client.readyState === 1) {
         client.send(jsonMessage);
