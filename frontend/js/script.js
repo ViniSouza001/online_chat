@@ -61,7 +61,6 @@ const connect = () => {
     websocket.onopen = () => {
       header.style.display = "none";
       headerCouting.style.display = "flex"
-      // userCountString.style.display = "block";
       const message = {
         userId: user.id,
         userName: user.name,
@@ -117,16 +116,14 @@ const displayMessage = (data) => {
 
     // atualiza contador se for recebido
     if(userCount !== undefined) {
-      userCountString.textContent = `Usuários conectados: ${userCount}`
+      userCountString.textContent = `Usuários conectados: ${userCount}`;
     }
 
   } else if (userId == user.id) {
     message = createMessageSelfElement(content, idMessage);
   } else {
     message = createMessageOtherElement(content, userName, userColor, idMessage);
-  }
-
- 
+  } 
 
   chatMessages.appendChild(message);
 
@@ -143,8 +140,6 @@ const handleTyping = () => {
       typing: true // show that user is typing
     })
   );
-
-  // scrollScreen()
 
   // remove the indication of typing after 3 seconds of inativity
   clearTimeout(typingTimeout);
@@ -174,7 +169,6 @@ const processMessage = (event) => {
     } else {
       typingIndicator.innerText = ``
       typingIndicator.remove();
-
     }
   } else {
     displayMessage(data);
@@ -186,13 +180,11 @@ const getRandomColor = () => {
   return colors[randomIndex];
 };
 
-
 const handleDisplay = (element) => {
   element.classList.toggle("display--none");
 }
 
 const createMessageSelfElement = (content, idMessage) => {
-
   const div = document.createElement("div");
   const editIcon = document.createElement("img");
   const messageText = document.createElement("span");
@@ -236,6 +228,10 @@ const createMessageSelfElement = (content, idMessage) => {
 const createMessageOtherElement = (content, sender, senderColor, idMessage) => {
   const div = document.createElement("div");
   const h1 = document.createElement("h1");
+  const messageText = document.createElement("span");
+
+  messageText.classList.add("message-content");
+  messageText.textContent = content;
 
   div.id = `${idMessage}`;
   div.classList.add("message--other");
@@ -245,13 +241,12 @@ const createMessageOtherElement = (content, sender, senderColor, idMessage) => {
   div.appendChild(h1);
 
   h1.innerHTML = sender;
-  div.innerHTML += content;
+  div.appendChild(messageText);
 
   return div;
 };
 
 const createMessageSystem = (content, userName, userColor, newName) => {
-
   const div = document.createElement("div");
   const span = document.createElement("span");
   div.classList.add("message--system");
