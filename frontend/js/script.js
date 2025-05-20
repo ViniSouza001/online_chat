@@ -18,7 +18,6 @@ const chatMessages = chat.querySelector(".chat__messages");
 
 // config elements
 const alterName = document.querySelector(".alterName");
-// const formAlterName = document.querySelector(".formAlterName");
 const forms = document.querySelectorAll(".form");
 const formEdition = document.querySelector(".formEdition");
 const inputFormEdition = formEdition.querySelector(".login__input");
