@@ -1,6 +1,6 @@
 const header = document.querySelector(".load");
 let userCount = 0;
-let editableMessageId = ""
+let editableMessageId = "";
 const userCountString = document.querySelector('.userCount');
 const headerCouting = document.querySelector('.header');
 const config = document.querySelector(".config");
@@ -14,6 +14,8 @@ const loginInput = login.querySelector(".login__input");
 const chat = document.querySelector(".chat");
 const chatForm = chat.querySelector(".chat__form");
 const chatInput = chat.querySelector(".chat__input");
+const uploadBtn = chat.querySelector(".uploadBtn");
+const fileInput = chat.querySelector("#fileInput");
 const chatMessages = chat.querySelector(".chat__messages");
 
 // config elements
@@ -96,12 +98,45 @@ const connect = () => {
 }
 
 const displayMessage = (data) => {
-  const { userId, userName, userColor, content, isNewName, systemMessage, userCount, contentEdition, idMessage, editedMessage } = data;
+  const { userId,
+    userName,
+    userColor,
+    content,
+    isNewName,
+    systemMessage,
+    userCount,
+    contentEdition,
+    idMessage,
+    editedMessage,
+    type} = data;
 
  if(editedMessage) {
     const message = document.getElementById(idMessage);
     const contentSpan = message.querySelector(".message-content");
     if(contentSpan) contentSpan.textContent = contentEdition;
+    return;
+  }
+
+  if(type == "image") {
+    const div = document.createElement("div");
+    div.classList.add("message--image");
+    
+    const img = document.createElement("img");
+    img.src = data.content;
+    img.alt = "Imagem enviada";
+
+    const caption = document.createElement("span");
+    const h1 = document.createElement('h1');
+    h1.classList.add("message--sender");
+    h1.style.color = userColor;
+    h1.innerHTML = userName
+    caption.appendChild(h1);
+
+    div.appendChild(caption);
+    div.appendChild(img);
+    chatMessages.appendChild(div);
+    scrollScreen();
+    playAudio();
     return;
   }
 
@@ -188,10 +223,10 @@ const createMessageSelfElement = (content, idMessage) => {
   const editIcon = document.createElement("img");
   const messageText = document.createElement("span");
   messageText.classList.add("message-content");
-  messageText.textContent = content;
+  messageText.innerHTML = content;
 
   div.classList.add("message--self");
-  div.id = `${idMessage}`;
+  if(idMessage) {div.id = `${idMessage}`;};
 
   // edition icon
   editIcon.src = "./images/edit.png";
@@ -293,7 +328,7 @@ const handleLogin = (event) => {
   login.style.display = "none";
   chat.style.display = "flex";
 
-  chatInput.focus()
+  chatInput.focus();
 };
 
 const sendMessage = (event) => {
@@ -367,6 +402,9 @@ const editMessage = (event) => {
 
 loginForm.addEventListener("submit", handleLogin);
 chatForm.addEventListener("submit", sendMessage);
+uploadBtn.addEventListener("click", () => {
+  fileInput.click()
+})
 formEdition.addEventListener("submit", editMessage);
 alterName.addEventListener("submit", handleAlterName);
 
@@ -383,3 +421,28 @@ const activeConfig = () => {
 const reload = () => {
   window.location.reload();
 }
+
+// image selector
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0]; // list of archives on <input type="file"/>
+  if(!file) return; // if not choosed a file, exit
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64Image = reader.result;
+    const data = {
+      userId: user.id,
+      userName: user.name,
+      userColor: user.color,
+      content: base64Image,
+      type: "image"
+    };
+
+    websocket.send(JSON.stringify(data));
+    fileInput.value = ""; // clean input value after send to backend
+  };
+
+  reader.readAsDataURL(file);
+
+});

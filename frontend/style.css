@@ -203,6 +203,7 @@ body {
   background: none;
   color: #f2f2f2;
   cursor: pointer;
+  margin: 5px;
 }
 
 .chat__button > span {
@@ -219,6 +220,21 @@ body {
   margin-bottom: 15px;
   line-height: 22px;
   word-wrap: break-word;
+}
+
+.message--image {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  margin: 20px;
+  background-color: #123;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.message--image > img {
+  max-width: 250px;
+  border-radius: 10px;
 }
 
 .message--self {
