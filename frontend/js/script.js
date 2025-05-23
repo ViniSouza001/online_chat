@@ -402,9 +402,34 @@ const editMessage = (event) => {
 
 loginForm.addEventListener("submit", handleLogin);
 chatForm.addEventListener("submit", sendMessage);
-uploadBtn.addEventListener("click", () => {
-  fileInput.click()
-})
+chatInput.addEventListener("paste", (event) => {
+  const items = event.clipboardData.items;
+  console.log(items[0].type)
+  for(let i = 0; i < items.length; i++) {
+    const item = items[i];
+
+    if(item.type.startsWith("image/")) {
+      const file = item.getAsFile();
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Image = reader.result;
+        const data = {
+          userId: user.id,
+          useName: user.name,
+          userColor: user.color,
+          content: base64Image,
+          type: "image"
+        };
+        websocket.send(JSON.stringify(data));
+      };
+      reader.readAsDataURL(file);
+      event.preventDefault();
+      return;
+    }
+  }
+});
+uploadBtn.addEventListener("click", () => {fileInput.click();});
 formEdition.addEventListener("submit", editMessage);
 alterName.addEventListener("submit", handleAlterName);
 
