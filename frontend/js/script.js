@@ -20,11 +20,11 @@ const chatMessages = chat.querySelector(".chat__messages");
 
 // config elements
 const alterName = document.querySelector(".alterName");
+const inputAlterName = document.querySelector(".inputAlterName");
 const forms = document.querySelectorAll(".form");
 const formEdition = document.querySelector(".formEdition");
 const inputFormEdition = formEdition.querySelector(".login__input");
 const cancel = document.querySelector(".btnCancel");
-const inputAlterName = document.querySelector(".inputAlterName");
 const idMessage = "";
 
 // sounds
